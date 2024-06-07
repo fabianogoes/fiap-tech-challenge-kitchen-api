@@ -1,6 +1,6 @@
 # FIAP challenge - Kitchen
 
-[![CI/CD](https://github.com/fabianogoes/fiap-tech-challenge-kitchen-api/actions/workflows/deploy.yml/badge.svg)](https://github.com/fabianogoes/fiap-tech-challenge-restaurant-api/actions/workflows/deploy.yml)
+[![CI/CD](https://github.com/fabianogoes/fiap-tech-challenge-kitchen-api/actions/workflows/deploy.yml/badge.svg)](https://github.com/fabianogoes/fiap-tech-challenge-kitchen-api/actions/workflows/deploy.yml)
 
 ## Project Architecture by Clean Architecture
 
