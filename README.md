@@ -10,8 +10,6 @@
 - `domain/entities`: diretório que contém modelos/entidades de domínio que representam os principais conceitos de negócios.
 - `domain/usecases`: diretório que contém Serviços de Domínio ou Use Cases.
 - `domain/ports`: diretório que contém ‘interfaces’ ou contratos definidos que os adaptadores devem seguir.
-- `adapters/payment`: adaptador para meio de pagamento externo.
-- `adapters/delivery`: adaptador para meio de entrega externo.
 - `frameworks/rest`: diretório que contém os controllers e manipulador de requisições REST.
 - `frameworks/rest/dto`: diretório que contém objetos/modelo de request e response.
 - `frameworks/repository`: diretório que contém adaptadores de banco de dados exemplo para PostgreSQL.
@@ -49,8 +47,8 @@ go version
 Preparing app
 
 ```shell
-git clone git@github.com:fabianogoes/fiap-tech-challenge-restaurant-api.git
-cd fiap-tech-challenge-restaurant-api
+git clone git@github.com:fabianogoes/fiap-tech-challenge-kitchen-api.git
+cd fiap-tech-challenge-kitchen-api
 go mod tidy
 ````
 
@@ -65,42 +63,21 @@ docker-compose up -d postgres && go run app/web/main.go
 ```shell
 docker-compose up -d
 
-curl --request GET --url http://localhost:8080/health
+curl --request GET --url http://localhost:8020/health
 
 ## response 
 {"status":"UP"}
 ```
 
-### Pre-registered data
-
-Quando a ‘app’ subir será inserido dados necessários para testar a criação de pedidos 
-
-Para verificar a **lista de produtos** pode ser usado a API:
-
-```shell
-http://localhost:8080/products
-```
-
-Para verificar a **lista de clientes** pode ser usado a API:
-
-```shell
-http://localhost:8080/customers
-```
-
-Para verificar a **lista de Atendentes** pode ser usado a API: 
-```shell
-http://localhost:8080/attendants
-```
-
-[Collection de Teste que pode ser importada no Postman](./__utils__/fiap-tech-challenge-Insomnia.json)
+[Insomnia Collection](.utils/fiap-tech-challenge-Insomnia.json)
 
 ## Docker Commands
 
 ```shell
 docker login -u=fabianogoes
-docker build -t fabianogoes/restaurant-api:3.20240426.1 .
-docker tag fabianogoes/restaurant-api:3.20240426.1 fabianogoes/restaurant-api:3.20240426.1
-docker push fabianogoes/restaurant-api:3.20240426.1
+docker build -t fabianogoes/kitchen-api:latest .
+docker tag fabianogoes/kitchen-api:latest fabianogoes/kitchen-api:latest
+docker push fabianogoes/kitchen-api:latest
 ```
 
 ## Run Go test
