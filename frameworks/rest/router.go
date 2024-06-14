@@ -17,14 +17,14 @@ func NewRouter(
 	router.GET("/health", Health)
 	router.GET("/env", Environment)
 
-	orders := router.Group("/orders")
+	orders := router.Group("/kitchen/orders")
 	{
 		orders.POST("/", kitchenHandler.Creation)
 		orders.GET("/:id", kitchenHandler.GetById)
 		orders.GET("/", kitchenHandler.GetAll)
-		orders.PUT("/:id/preparation", kitchenHandler.Preparation)
-		orders.PUT("/:id/ready", kitchenHandler.Ready)
-		orders.PUT("/:id/cancel", kitchenHandler.Cancel)
+		orders.POST("/:id/preparation", kitchenHandler.Preparation)
+		orders.POST("/:id/ready", kitchenHandler.Ready)
+		orders.POST("/:id/cancel", kitchenHandler.Cancel)
 	}
 
 	return &Router{

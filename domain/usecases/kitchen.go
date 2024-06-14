@@ -20,7 +20,7 @@ func NewKitchenService(
 
 func (ks *KitchenService) Creation(order *entities.Order) (*entities.Order, error) {
 	fmt.Println(order)
-	return nil, nil
+	return ks.kitchenRepository.Create(order)
 }
 
 func (ks *KitchenService) GetById(id uint) (*entities.Order, error) {
