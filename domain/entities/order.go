@@ -31,12 +31,12 @@ func (os OrderStatus) ToString() string {
 		"WAITING",
 		"PREPARATION",
 		"READY",
-		"CANCELLED",
+		"CANCELED",
 		"UNKNOWN",
 	}[os]
 }
 
-func (os OrderStatus) ToOrderStatus(status string) OrderStatus {
+func ToOrderStatus(status string) OrderStatus {
 	switch status {
 	case "WAITING":
 
@@ -47,7 +47,7 @@ func (os OrderStatus) ToOrderStatus(status string) OrderStatus {
 	case "READY":
 
 		return OrderStatusReady
-	case "CANCELLED":
+	case "CANCELED":
 
 		return OrderStatusCanceled
 	default:

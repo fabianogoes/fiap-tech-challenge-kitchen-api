@@ -27,8 +27,8 @@ func (ks *KitchenService) GetById(id uint) (*entities.Order, error) {
 	return ks.kitchenRepository.GetById(id)
 }
 
-func (ks *KitchenService) GetAll() ([]*entities.Order, error) {
-	return ks.kitchenRepository.GetAll()
+func (ks *KitchenService) GetAll(status entities.OrderStatus) ([]*entities.Order, error) {
+	return ks.kitchenRepository.GetAll(status)
 }
 
 func (ks *KitchenService) Preparation(orderID uint) (*entities.Order, error) {

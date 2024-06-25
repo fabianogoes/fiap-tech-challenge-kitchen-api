@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"github.com/fabianogoes/fiap-kitchen/domain/entities"
 	"github.com/fabianogoes/fiap-kitchen/domain/ports"
 	"github.com/fabianogoes/fiap-kitchen/frameworks/rest/dto"
 	"net/http"
@@ -54,7 +55,7 @@ func (h *KitchenHandler) GetById(c *gin.Context) {
 
 	order, err := h.UseCase.GetById(uint(orderID))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -64,7 +65,9 @@ func (h *KitchenHandler) GetById(c *gin.Context) {
 }
 
 func (h *KitchenHandler) GetAll(c *gin.Context) {
-	orders, err := h.UseCase.GetAll()
+	statusPar := c.Query("status")
+	status := entities.ToOrderStatus(statusPar)
+	orders, err := h.UseCase.GetAll(status)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
