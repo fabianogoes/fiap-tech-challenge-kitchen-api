@@ -1,6 +1,9 @@
 # FIAP challenge - Kitchen
 
-[![CI/CD](https://github.com/fabianogoes/fiap-tech-challenge-kitchen-api/actions/workflows/deploy.yml/badge.svg)](https://github.com/fabianogoes/fiap-tech-challenge-kitchen-api/actions/workflows/deploy.yml)
+[![CI](https://github.com/fabianogoes/fiap-tech-challenge-kitchen-api/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/fabianogoes/fiap-tech-challenge-kitchen-api/actions/workflows/ci-cd.yml)
+[![Coverage Percent](https://codecov.io/github/fabianogoes/fiap-tech-challenge-kitchen-api/graph/badge.svg?token=877UONKJDB)](https://codecov.io/github/fabianogoes/fiap-tech-challenge-kitchen-api)
+
+[![Coverage Graph](https://codecov.io/github/fabianogoes/fiap-tech-challenge-kitchen-api/graphs/sunburst.svg?token=877UONKJDB)](https://codecov.io/github/fabianogoes/fiap-tech-challenge-kitchen-api)
 
 ## Project Architecture by Clean Architecture
 
