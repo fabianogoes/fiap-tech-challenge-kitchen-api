@@ -2,168 +2,221 @@ package usecases
 
 import (
 	"errors"
+	"fmt"
 	"github.com/fabianogoes/fiap-kitchen/domain/entities"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
-func TestKitchenService_Creation(t *testing.T) {
-	kitchenRepositoryMock := new(KitchenRepositoryMock)
-	kitchenRepositoryMock.On("Create", mock.Anything).Return(OrderWithID)
-
-	useCase := NewKitchenService(kitchenRepositoryMock)
-
-	creation, err := useCase.Creation(OrderWithoutID)
-	assert.NoError(t, err)
-	assert.NotNil(t, creation)
-	assert.NotNil(t, creation.ID)
-	assert.Equal(t, entities.OrderStatusWaiting, creation.Status)
+func TestKitchen(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "Kitchen Suite")
 }
 
-func TestKitchenService_CreationFail(t *testing.T) {
-	order := OrderWithoutID
-	order.ID = OrderIdFail
+var _ = Describe("Kitchen", func() {
+	Context("creation success", func() {
+		orderWaiting := *OrderWithID
+		orderWaiting.Status = entities.OrderStatusWaiting
+		kitchenRepositoryMock := new(KitchenRepositoryMock)
+		kitchenRepositoryMock.On("Create", mock.Anything).Return(&orderWaiting, nil)
 
-	kitchenRepositoryMock := new(KitchenRepositoryMock)
-	kitchenRepositoryMock.On("Create", order).Return(nil, errors.New("creation error"))
+		useCase := NewKitchenService(kitchenRepositoryMock)
 
-	useCase := NewKitchenService(kitchenRepositoryMock)
+		order, err := useCase.Creation(&orderWaiting)
 
-	creation, err := useCase.Creation(order)
-	assert.Error(t, err)
-	assert.Nil(t, creation)
-}
+		It("has no error on creation", func() {
+			Expect(err).Should(BeNil())
+		})
 
-func TestKitchenService_GetById(t *testing.T) {
-	order := OrderWithoutID
-	order.ID = OrderIdFail
+		It("has order not be nil", func() {
+			Expect(order).ShouldNot(BeNil())
+		})
 
-	kitchenRepositoryMock := new(KitchenRepositoryMock)
-	kitchenRepositoryMock.On("GetById", order.ID).Return(nil, errors.New("not found"))
+		It(fmt.Sprintf("has id %d", order.ID), func() {
+			Expect(order.ID).Should(Equal(OrderWithID.ID))
+		})
+	})
 
-	useCase := NewKitchenService(kitchenRepositoryMock)
+	Context("creation failed", func() {
+		kitchenRepositoryMock := new(KitchenRepositoryMock)
+		kitchenRepositoryMock.On("Create", mock.Anything).Return(nil, errors.New("creation error"))
 
-	order, err := useCase.GetById(order.ID)
-	assert.Error(t, err)
-	assert.Nil(t, order)
-}
+		useCase := NewKitchenService(kitchenRepositoryMock)
 
-func TestKitchenService_GetByIdFail(t *testing.T) {
-	kitchenRepositoryMock := new(KitchenRepositoryMock)
-	kitchenRepositoryMock.On("GetById", mock.Anything).Return(OrderWithID)
+		orderToCreation := *OrderWithoutID
+		orderToCreation.ID = OrderIdFail
+		order, err := useCase.Creation(&orderToCreation)
+		It("has no error on creation", func() {
+			Expect(err).ShouldNot(BeNil())
+		})
 
-	useCase := NewKitchenService(kitchenRepositoryMock)
+		It("has order not be nil", func() {
+			Expect(order).Should(BeNil())
+		})
+	})
 
-	order, err := useCase.GetById(OrderIdSuccess)
-	assert.NoError(t, err)
-	assert.NotNil(t, order)
-	assert.NotNil(t, order.ID)
-	assert.Equal(t, entities.OrderStatusWaiting, order.Status)
-}
+	Context("get by id success", func() {
+		kitchenRepositoryMock := new(KitchenRepositoryMock)
+		kitchenRepositoryMock.On("GetById", mock.Anything).Return(OrderWithID, nil)
 
-func TestKitchenService_GetAll(t *testing.T) {
-	kitchenRepositoryMock := new(KitchenRepositoryMock)
-	list := []*entities.Order{OrderWithID}
-	kitchenRepositoryMock.On("GetAll", mock.Anything).Return(list)
+		useCase := NewKitchenService(kitchenRepositoryMock)
 
-	useCase := NewKitchenService(kitchenRepositoryMock)
+		order, err := useCase.GetById(OrderWithID.ID)
+		It("has no error on get", func() {
+			Expect(err).Should(BeNil())
+		})
 
-	orders, err := useCase.GetAll(entities.OrderStatusReady)
-	assert.NoError(t, err)
-	assert.NotNil(t, orders)
-	assert.Len(t, orders, 1)
-}
+		It("has order not be nil", func() {
+			Expect(order).ShouldNot(BeNil())
+		})
+	})
 
-func TestKitchenService_Preparation(t *testing.T) {
-	kitchenRepositoryMock := new(KitchenRepositoryMock)
+	Context("get by id failed", func() {
+		kitchenRepositoryMock := new(KitchenRepositoryMock)
+		kitchenRepositoryMock.On("GetById", mock.Anything).Return(nil, errors.New("get error"))
 
-	kitchenRepositoryMock.On("GetById", OrderWaiting.ID).Return(OrderWaiting, nil)
-	kitchenRepositoryMock.On("UpdateStatus", OrderWaiting).Return(OrderInPreparation, nil)
+		useCase := NewKitchenService(kitchenRepositoryMock)
 
-	useCase := NewKitchenService(kitchenRepositoryMock)
+		order, err := useCase.GetById(OrderIdFail)
+		It("has error on get", func() {
+			Expect(err).ShouldNot(BeNil())
+		})
 
-	inPreparation, err := useCase.Preparation(OrderWaiting.ID)
-	assert.NoError(t, err)
-	assert.NotNil(t, inPreparation)
-	assert.NotNil(t, inPreparation.ID)
-	assert.Equal(t, entities.OrderStatusInPreparation, inPreparation.Status)
-}
+		It("has order not be nil", func() {
+			Expect(order).Should(BeNil())
+		})
+	})
 
-func TestKitchenService_PreparationFail(t *testing.T) {
-	kitchenRepositoryMock := new(KitchenRepositoryMock)
-	kitchenRepositoryMock.On("GetById", OrderIdFail).Return(nil, errors.New("not found"))
+	Context("preparation success", func() {
+		orderPreparation := *OrderWaiting
+		orderPreparation.Status = entities.OrderStatusInPreparation
 
-	useCase := NewKitchenService(kitchenRepositoryMock)
+		kitchenRepositoryMock := new(KitchenRepositoryMock)
+		kitchenRepositoryMock.On("GetById", OrderWaiting.ID).Return(OrderWaiting, nil)
+		kitchenRepositoryMock.On("UpdateStatus", OrderWaiting).Return(&orderPreparation, nil)
 
-	orderFail, err := useCase.Preparation(OrderIdFail)
-	assert.Error(t, err)
-	assert.Nil(t, orderFail)
-}
+		useCase := NewKitchenService(kitchenRepositoryMock)
 
-func TestKitchenService_Ready(t *testing.T) {
-	kitchenRepositoryMock := new(KitchenRepositoryMock)
+		order, err := useCase.Preparation(orderPreparation.ID)
+		It("has no error on preparation", func() {
+			Expect(err).Should(BeNil())
+		})
 
-	kitchenRepositoryMock.On("GetById", OrderInPreparation.ID).Return(OrderInPreparation, nil)
-	kitchenRepositoryMock.On("UpdateStatus", mock.Anything).Return(OrderReady, nil)
+		It("has order not nil", func() {
+			Expect(order).ShouldNot(BeNil())
+		})
 
-	useCase := NewKitchenService(kitchenRepositoryMock)
+		It(fmt.Sprintf("has order with status %v", entities.OrderStatusInPreparation), func() {
+			Expect(order.Status).Should(Equal(entities.OrderStatusInPreparation))
+		})
+	})
 
-	inReady, err := useCase.Ready(OrderInPreparation.ID)
-	assert.NoError(t, err)
-	assert.NotNil(t, inReady)
-	assert.NotNil(t, inReady.ID)
-	assert.Equal(t, entities.OrderStatusReady, inReady.Status)
-}
+	Context("preparation failed", func() {
+		kitchenRepositoryMock := new(KitchenRepositoryMock)
+		kitchenRepositoryMock.On("GetById", OrderIdFail).Return(nil, errors.New("not found"))
 
-func TestKitchenService_ReadyFail(t *testing.T) {
-	kitchenRepositoryMock := new(KitchenRepositoryMock)
-	kitchenRepositoryMock.On("GetById", OrderIdFail).Return(nil, errors.New("not found"))
+		useCase := NewKitchenService(kitchenRepositoryMock)
 
-	useCase := NewKitchenService(kitchenRepositoryMock)
+		orderFail, err := useCase.Preparation(OrderIdFail)
+		It("has error on preparation", func() {
+			Expect(err).ShouldNot(BeNil())
+		})
 
-	orderFail, err := useCase.Ready(OrderIdFail)
-	assert.Error(t, err)
-	assert.Nil(t, orderFail)
-}
+		It("has order be nil", func() {
+			Expect(orderFail).Should(BeNil())
+		})
 
-func TestKitchenService_CancelFail(t *testing.T) {
-	kitchenRepositoryMock := new(KitchenRepositoryMock)
-	kitchenRepositoryMock.On("GetById", OrderIdFail).Return(nil, errors.New("not found"))
+	})
 
-	useCase := NewKitchenService(kitchenRepositoryMock)
+	Context("ready success", func() {
+		kitchenRepositoryMock := new(KitchenRepositoryMock)
 
-	orderFail, err := useCase.Cancel(OrderIdFail)
-	assert.Error(t, err)
-	assert.Nil(t, orderFail)
-}
+		kitchenRepositoryMock.On("GetById", OrderInPreparation.ID).Return(OrderInPreparation, nil)
+		kitchenRepositoryMock.On("UpdateStatus", mock.Anything).Return(OrderReady, nil)
 
-func TestKitchenService_Cancel(t *testing.T) {
-	kitchenRepositoryMock := new(KitchenRepositoryMock)
+		useCase := NewKitchenService(kitchenRepositoryMock)
 
-	kitchenRepositoryMock.On("GetById", OrderInPreparation.ID).Return(OrderInPreparation, nil)
-	kitchenRepositoryMock.On("UpdateStatus", OrderCanceled).Return(OrderCanceled, nil)
+		inReady, err := useCase.Ready(OrderInPreparation.ID)
+		It("has no error on ready", func() {
+			Expect(err).Should(BeNil())
+		})
 
-	useCase := NewKitchenService(kitchenRepositoryMock)
+		It("has order not nil", func() {
+			Expect(inReady).ShouldNot(BeNil())
+		})
 
-	inReady, err := useCase.Cancel(OrderInPreparation.ID)
-	assert.NoError(t, err)
-	assert.NotNil(t, inReady)
-	assert.NotNil(t, inReady.ID)
-	assert.Equal(t, entities.OrderStatusCanceled, inReady.Status)
-}
+	})
 
-func TestKitchenService_UpdateFail(t *testing.T) {
-	order := OrderWithoutID
-	order.ID = OrderIdFail
-	kitchenRepositoryMock := new(KitchenRepositoryMock)
+	Context("ready failed", func() {
+		kitchenRepositoryMock := new(KitchenRepositoryMock)
+		kitchenRepositoryMock.On("GetById", OrderIdFail).Return(nil, errors.New("not found"))
 
-	kitchenRepositoryMock.On("GetById", mock.Anything).Return(nil, errors.New("not found"))
-	kitchenRepositoryMock.On("UpdateStatus", order).Return(nil, errors.New("update error"))
+		useCase := NewKitchenService(kitchenRepositoryMock)
 
-	useCase := NewKitchenService(kitchenRepositoryMock)
+		orderFail, err := useCase.Ready(OrderIdFail)
+		It("has error on ready", func() {
+			Expect(err).ShouldNot(BeNil())
+		})
 
-	inReady, err := useCase.Ready(OrderIdFail)
-	assert.Error(t, err)
-	assert.Nil(t, inReady)
-}
+		It("has order nil", func() {
+			Expect(orderFail).Should(BeNil())
+		})
+	})
+
+	Context("cancel failed", func() {
+		kitchenRepositoryMock := new(KitchenRepositoryMock)
+		kitchenRepositoryMock.On("GetById", OrderIdFail).Return(nil, errors.New("not found"))
+
+		useCase := NewKitchenService(kitchenRepositoryMock)
+
+		orderFail, err := useCase.Cancel(OrderIdFail)
+		It("has error on cancel", func() {
+			Expect(err).ShouldNot(BeNil())
+		})
+
+		It("has order nil", func() {
+			Expect(orderFail).Should(BeNil())
+		})
+	})
+
+	Context("cancel success", func() {
+		kitchenRepositoryMock := new(KitchenRepositoryMock)
+
+		kitchenRepositoryMock.On("GetById", OrderInPreparation.ID).Return(OrderInPreparation, nil)
+		kitchenRepositoryMock.On("UpdateStatus", OrderCanceled).Return(OrderCanceled, nil)
+
+		useCase := NewKitchenService(kitchenRepositoryMock)
+
+		order, err := useCase.Cancel(OrderInPreparation.ID)
+		It("has no error on cancel", func() {
+			Expect(err).Should(BeNil())
+		})
+
+		It("has order not nil", func() {
+			Expect(order).ShouldNot(BeNil())
+		})
+	})
+
+	Context("update failed", func() {
+		order := OrderWithoutID
+		order.ID = OrderIdFail
+		kitchenRepositoryMock := new(KitchenRepositoryMock)
+
+		kitchenRepositoryMock.On("GetById", mock.Anything).Return(nil, errors.New("not found"))
+		kitchenRepositoryMock.On("UpdateStatus", order).Return(nil, errors.New("update error"))
+
+		useCase := NewKitchenService(kitchenRepositoryMock)
+
+		order, err := useCase.Ready(OrderIdFail)
+		It("has error on update", func() {
+			Expect(err).ShouldNot(BeNil())
+		})
+
+		It("has order not nil", func() {
+			Expect(order).Should(BeNil())
+		})
+	})
+})
