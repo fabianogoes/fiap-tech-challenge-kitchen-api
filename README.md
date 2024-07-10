@@ -1,10 +1,9 @@
 # FIAP challenge - Kitchen
 
 [![CI](https://github.com/fabianogoes/fiap-tech-challenge-kitchen-api/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/fabianogoes/fiap-tech-challenge-kitchen-api/actions/workflows/ci-cd.yml)
-[![Coverage Percent](https://codecov.io/github/fabianogoes/fiap-tech-challenge-kitchen-api/graph/badge.svg?token=877UONKJDB)](https://codecov.io/github/fabianogoes/fiap-tech-challenge-kitchen-api)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=fabianogoes_fiap-tech-challenge-kitchen-api&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=fabianogoes_fiap-tech-challenge-kitchen-api)
-
-[![Coverage Graph](https://codecov.io/github/fabianogoes/fiap-tech-challenge-kitchen-api/graphs/sunburst.svg?token=877UONKJDB)](https://codecov.io/github/fabianogoes/fiap-tech-challenge-kitchen-api)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=fabianogoes_fiap-tech-challenge-kitchen-api&metric=coverage)](https://sonarcloud.io/summary/new_code?id=fabianogoes_fiap-tech-challenge-kitchen-api)
+<img src="https://sonarcloud.io/images/project_badges/sonarcloud-white.svg" alt="Scanned on SonarCloud" height="20px" />
 
 ## Project Architecture by Clean Architecture
 
