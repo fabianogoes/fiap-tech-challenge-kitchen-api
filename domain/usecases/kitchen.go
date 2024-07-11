@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"fmt"
+
 	"github.com/fabianogoes/fiap-kitchen/domain/entities"
 	"github.com/fabianogoes/fiap-kitchen/domain/ports"
 )
@@ -20,6 +21,7 @@ func NewKitchenService(
 
 func (ks *KitchenService) Creation(order *entities.Order) (*entities.Order, error) {
 	fmt.Println(order)
+	order.Status = entities.OrderStatusWaiting
 	return ks.kitchenRepository.Create(order)
 }
 

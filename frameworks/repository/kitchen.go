@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+
 	"github.com/fabianogoes/fiap-kitchen/domain/entities"
 	"github.com/fabianogoes/fiap-kitchen/frameworks/repository/dbo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -15,7 +16,7 @@ type KitchenRepository struct {
 }
 
 func NewKitchenRepository(db *mongo.Database) *KitchenRepository {
-	return &KitchenRepository{db, db.Collection("payments")}
+	return &KitchenRepository{db, db.Collection("orders")}
 }
 
 func (or *KitchenRepository) Create(order *entities.Order) (*entities.Order, error) {
@@ -70,6 +71,21 @@ func (or *KitchenRepository) GetAll(status entities.OrderStatus) ([]*entities.Or
 }
 
 func (or *KitchenRepository) UpdateStatus(order *entities.Order) (*entities.Order, error) {
-	fmt.Println(order)
-	return nil, nil
+	update := bson.M{"$set": bson.M{
+		"status": order.Status.ToString(),
+	}}
+
+	one, err := or.collection.UpdateOne(context.Background(), bson.M{"orderId": order.ID}, update)
+	fmt.Printf("Update one %v\n", one)
+	if err != nil {
+		fmt.Printf("Error updating order %v status %v \n", order.ID, order.Status.ToString())
+		return nil, err
+	}
+
+	orderResponse, err := or.GetById(order.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return orderResponse, nil
 }
