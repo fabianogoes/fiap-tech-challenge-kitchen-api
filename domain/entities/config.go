@@ -9,6 +9,7 @@ import (
 )
 
 type Config struct {
+	AppName 	string
 	Environment string
 	AppPort     string
 	DBUri       string
@@ -20,6 +21,7 @@ func NewConfig() (*Config, error) {
 	loadEnvironment()
 
 	config := &Config{
+		AppName: 	 strings.TrimRight(os.Getenv("APP_NAME"), "\n\r"),
 		Environment: strings.TrimRight(os.Getenv("APP_ENV"), "\n\r"),
 		AppPort:     strings.TrimRight(os.Getenv("APP_PORT"), "\n\r"),
 		DBUri:       strings.TrimRight(os.Getenv("DB_URI"), "\n\r"),
@@ -46,6 +48,7 @@ func loadEnvironment() {
 			os.Exit(1)
 		}
 	} else {
+		_ = os.Setenv("APP_NAME", "kitchen-api")
 		_ = os.Setenv("APP_ENV", "default")
 		_ = os.Setenv("APP_PORT", ":8010")
 		_ = os.Setenv("DB_URI", "mongodb://<USER>:<PASSWORD>@localhost:27017/")
@@ -57,6 +60,7 @@ func loadEnvironment() {
 
 func printConfig(config *Config) {
 	fmt.Println("*** Environments ***")
+	fmt.Printf("App Name: %s\n", config.AppName)
 	fmt.Printf("Environment: %s\n", config.Environment)
 	fmt.Printf("App Port: %s\n", config.AppPort)
 	fmt.Printf("DB DBUri: %s\n", config.DBUri)

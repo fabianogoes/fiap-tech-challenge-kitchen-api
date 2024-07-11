@@ -46,6 +46,8 @@ spec:
                   key: DB_URI
             - name: DB_NAME
               value: "tech_challenge_kitchen_db"
+            - name: APP_NAME
+              value: kitchen-api
             - name: APP_ENV
               value: "production"
             - name: APP_PORT
