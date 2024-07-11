@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: kitchen-api
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: kitchen-api
@@ -37,20 +37,21 @@ spec:
               cpu: 1m
           envFrom:
             - secretRef:
-                name: app-secret
+                name: kitchen-secret
           env:
             - name: DB_URI
               valueFrom:
                 secretKeyRef:
-                  name: app-secret
+                  name: kitchen-secret
                   key: DB_URI
             - name: DB_NAME
               value: "tech_challenge_kitchen_db"
+            - name: APP_NAME
+              value: kitchen-api
             - name: APP_ENV
               value: "production"
             - name: APP_PORT
-              value: ":8020"
+              value: ":8080"
             - name: API_VERSION
               value: "4.0"
       restartPolicy: Always
-
