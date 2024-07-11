@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/fabianogoes/fiap-kitchen/domain/entities"
 	"github.com/fabianogoes/fiap-kitchen/domain/ports"
@@ -26,6 +27,7 @@ func (ks *KitchenService) Creation(order *entities.Order) (*entities.Order, erro
 }
 
 func (ks *KitchenService) GetById(id uint) (*entities.Order, error) {
+	log.Default().Printf("GetById orderID: %d \n", id)
 	return ks.kitchenRepository.GetById(id)
 }
 

@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/fabianogoes/fiap-kitchen/domain/entities"
 	"github.com/fabianogoes/fiap-kitchen/frameworks/repository/dbo"
@@ -36,9 +37,10 @@ func (or *KitchenRepository) Create(order *entities.Order) (*entities.Order, err
 }
 
 func (or *KitchenRepository) GetById(id uint) (*entities.Order, error) {
+	log.Default().Printf("GetById orderID: %d \n", id)
 	var order dbo.Order
 
-	err := or.collection.FindOne(context.Background(), bson.M{"orderId": id}).Decode(&order)
+	err := or.collection.FindOne(context.Background(), bson.M{"orderId": int(id)}).Decode(&order)
 	if err != nil {
 		return nil, err
 	}

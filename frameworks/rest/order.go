@@ -1,11 +1,13 @@
 package rest
 
 import (
+	"log"
+	"net/http"
+	"strconv"
+
 	"github.com/fabianogoes/fiap-kitchen/domain/entities"
 	"github.com/fabianogoes/fiap-kitchen/domain/ports"
 	"github.com/fabianogoes/fiap-kitchen/frameworks/rest/dto"
-	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -45,6 +47,7 @@ func (h *KitchenHandler) Creation(c *gin.Context) {
 }
 
 func (h *KitchenHandler) GetById(c *gin.Context) {
+	log.Default().Println("GetById...")
 	orderID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
