@@ -53,7 +53,7 @@ func loadEnvironment() {
 		_ = os.Setenv("APP_PORT", ":8010")
 		_ = os.Setenv("DB_URI", "mongodb://<USER>:<PASSWORD>@localhost:27017/")
 		_ = os.Setenv("DB_NAME", "tech_challenge_kitchen_db")
-		_ = os.Setenv("API_VERSION", "1.0")
+		_ = os.Setenv("API_VERSION", "4.0")
 	}
 
 }
