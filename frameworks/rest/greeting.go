@@ -8,7 +8,7 @@ import (
 
 func Welcome(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Welcome to the API GoFood",
+		"message": "Welcome to the Kitchen API",
 	})
 }
 
