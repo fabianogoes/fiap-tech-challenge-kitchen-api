@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/fabianogoes/fiap-kitchen/domain/usecases"
-	"github.com/fabianogoes/fiap-kitchen/frameworks/repository"
 	"log/slog"
 	"os"
+
+	"github.com/fabianogoes/fiap-kitchen/adapters/restaurant"
+	"github.com/fabianogoes/fiap-kitchen/domain/usecases"
+	"github.com/fabianogoes/fiap-kitchen/frameworks/repository"
 
 	"github.com/fabianogoes/fiap-kitchen/domain/entities"
 
@@ -47,7 +49,8 @@ func main() {
 	}
 
 	rep := repository.NewKitchenRepository(db)
-	useCase := usecases.NewKitchenService(rep)
+	restaurantAdapter := restaurant.NewClientAdapter(config)
+	useCase := usecases.NewKitchenService(rep, &restaurantAdapter)
 	handler := rest.NewKitchenHandler(useCase)
 
 	router, err := rest.NewRouter(handler)

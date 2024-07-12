@@ -1,6 +1,8 @@
 package usecases
 
 import (
+	"fmt"
+
 	"github.com/fabianogoes/fiap-kitchen/domain/entities"
 	"github.com/stretchr/testify/mock"
 )
@@ -127,4 +129,13 @@ func (or *KitchenRepositoryMock) UpdateStatus(order *entities.Order) (*entities.
 	}
 
 	return nil, args.Error(1)
+}
+
+type RestaurantClientMock struct {
+	mock.Mock
+}
+
+func (p *RestaurantClientMock) ReadyForDelivery(orderID uint) error {
+	fmt.Printf("ReadyForDelivery orderID: %d \n", orderID)
+	return nil
 }
