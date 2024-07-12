@@ -5,14 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/fabianogoes/fiap-kitchen/domain/entities"
 	"github.com/fabianogoes/fiap-kitchen/domain/usecases"
 	"github.com/fabianogoes/fiap-kitchen/frameworks/rest/dto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"net/http"
-	"net/http/httptest"
-	"testing"
 )
 
 var creationRequestSuccess = dto.CreationRequest{
@@ -47,7 +48,7 @@ func TestKitchenHandler_Creation(t *testing.T) {
 	repository := new(usecases.KitchenRepositoryMock)
 	repository.On("Create", mock.Anything).Return(usecases.OrderWithID)
 
-	useCase := usecases.NewKitchenService(repository)
+	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
 	jsonRequest, _ := json.Marshal(creationRequestSuccess)
@@ -66,7 +67,7 @@ func TestKitchenHandler_CreationFailBdRequest(t *testing.T) {
 	repository := new(usecases.KitchenRepositoryMock)
 	repository.On("Create", mock.Anything).Return(nil, errors.New("creation error"))
 
-	useCase := usecases.NewKitchenService(repository)
+	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
 	r := SetupTest()
@@ -82,7 +83,7 @@ func TestKitchenHandler_CreationFail(t *testing.T) {
 	repository := new(usecases.KitchenRepositoryMock)
 	repository.On("Create", mock.Anything).Return(nil, errors.New("creation error"))
 
-	useCase := usecases.NewKitchenService(repository)
+	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
 	creationRequestFail.ID = usecases.OrderIdFail
@@ -103,7 +104,7 @@ func TestKitchenHandler_GetById(t *testing.T) {
 	repository := new(usecases.KitchenRepositoryMock)
 	repository.On("GetById", mock.Anything).Return(orderReady, nil)
 
-	useCase := usecases.NewKitchenService(repository)
+	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
 	r := SetupTest()
@@ -119,7 +120,7 @@ func TestKitchenHandler_GetByIdFailNotFound(t *testing.T) {
 	repository := new(usecases.KitchenRepositoryMock)
 	repository.On("GetById", mock.Anything).Return(nil, errors.New("not found"))
 
-	useCase := usecases.NewKitchenService(repository)
+	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
 	r := SetupTest()
@@ -134,7 +135,7 @@ func TestKitchenHandler_GetByIdFailNotFound(t *testing.T) {
 func TestKitchenHandler_GetByIdFailBadRequest(t *testing.T) {
 	repository := new(usecases.KitchenRepositoryMock)
 
-	useCase := usecases.NewKitchenService(repository)
+	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
 	r := SetupTest()
@@ -151,7 +152,7 @@ func TestKitchenHandler_GetAll(t *testing.T) {
 	repository := new(usecases.KitchenRepositoryMock)
 	repository.On("GetAll", entities.OrderStatusReady).Return(orders, nil)
 
-	useCase := usecases.NewKitchenService(repository)
+	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
 	statusRequest := entities.OrderStatusReady.ToString()
@@ -168,7 +169,7 @@ func TestKitchenHandler_GetAllFail(t *testing.T) {
 	repository := new(usecases.KitchenRepositoryMock)
 	repository.On("GetAll", entities.OrderStatusUnknown).Return(nil, errors.New("not found"))
 
-	useCase := usecases.NewKitchenService(repository)
+	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
 	statusRequest := entities.OrderStatusUnknown.ToString()
@@ -187,7 +188,7 @@ func TestKitchenHandler_Preparation(t *testing.T) {
 	repository.On("GetById", order.ID).Return(order, nil)
 	repository.On("UpdateStatus", order).Return(order, nil)
 
-	useCase := usecases.NewKitchenService(repository)
+	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
 	r := SetupTest()
@@ -205,7 +206,7 @@ func TestKitchenHandler_PreparationFailBadRequest(t *testing.T) {
 	repository.On("GetById", order.ID).Return(order, nil)
 	repository.On("UpdateStatus", order).Return(order, nil)
 
-	useCase := usecases.NewKitchenService(repository)
+	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
 	r := SetupTest()
@@ -221,7 +222,7 @@ func TestKitchenHandler_PreparationFailError(t *testing.T) {
 	repository := new(usecases.KitchenRepositoryMock)
 	repository.On("GetById", usecases.OrderIdFail).Return(nil, errors.New("not found"))
 
-	useCase := usecases.NewKitchenService(repository)
+	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
 	r := SetupTest()
@@ -239,7 +240,7 @@ func TestKitchenHandler_Ready(t *testing.T) {
 	repository.On("GetById", order.ID).Return(order, nil)
 	repository.On("UpdateStatus", order).Return(order, nil)
 
-	useCase := usecases.NewKitchenService(repository)
+	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
 	r := SetupTest()
@@ -257,7 +258,7 @@ func TestKitchenHandler_ReadyFailBadRequest(t *testing.T) {
 	repository.On("GetById", order.ID).Return(order, nil)
 	repository.On("UpdateStatus", order).Return(order, nil)
 
-	useCase := usecases.NewKitchenService(repository)
+	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
 	r := SetupTest()
@@ -273,7 +274,7 @@ func TestKitchenHandler_ReadyFailError(t *testing.T) {
 	repository := new(usecases.KitchenRepositoryMock)
 	repository.On("GetById", usecases.OrderIdFail).Return(nil, errors.New("not found"))
 
-	useCase := usecases.NewKitchenService(repository)
+	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
 	r := SetupTest()
@@ -291,7 +292,7 @@ func TestKitchenHandler_Cancel(t *testing.T) {
 	repository.On("GetById", order.ID).Return(order, nil)
 	repository.On("UpdateStatus", order).Return(order, nil)
 
-	useCase := usecases.NewKitchenService(repository)
+	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
 	r := SetupTest()
@@ -309,7 +310,7 @@ func TestKitchenHandler_CancelFailBadRequest(t *testing.T) {
 	repository.On("GetById", order.ID).Return(order, nil)
 	repository.On("UpdateStatus", order).Return(order, nil)
 
-	useCase := usecases.NewKitchenService(repository)
+	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
 	r := SetupTest()
@@ -325,7 +326,7 @@ func TestKitchenHandler_CancelFailError(t *testing.T) {
 	repository := new(usecases.KitchenRepositoryMock)
 	repository.On("GetById", usecases.OrderIdFail).Return(nil, errors.New("not found"))
 
-	useCase := usecases.NewKitchenService(repository)
+	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
 	r := SetupTest()
