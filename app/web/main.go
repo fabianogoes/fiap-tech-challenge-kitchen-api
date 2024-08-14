@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/fabianogoes/fiap-kitchen/adapters/messaging"
+	"github.com/fabianogoes/fiap-kitchen/frameworks/scheduler"
 	"log/slog"
 	"os"
 
-	"github.com/fabianogoes/fiap-kitchen/adapters/restaurant"
 	"github.com/fabianogoes/fiap-kitchen/domain/usecases"
 	"github.com/fabianogoes/fiap-kitchen/frameworks/repository"
 
@@ -48,10 +49,16 @@ func main() {
 		panic(err)
 	}
 
+	awsSqsClient := messaging.NewAWSSQSClient(config)
 	rep := repository.NewKitchenRepository(db)
-	restaurantAdapter := restaurant.NewClientAdapter(config)
-	useCase := usecases.NewKitchenService(rep, &restaurantAdapter)
+	restaurantPublisher := messaging.NewRestaurantPublisher(config, awsSqsClient)
+	useCase := usecases.NewKitchenService(rep, restaurantPublisher)
 	handler := rest.NewKitchenHandler(useCase)
+
+	restaurantMessaging := messaging.NewRestaurantReceiver(useCase, config, awsSqsClient)
+
+	cron := scheduler.InitCronScheduler(restaurantMessaging)
+	defer cron.Stop()
 
 	router, err := rest.NewRouter(handler)
 	if err != nil {

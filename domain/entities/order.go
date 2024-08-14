@@ -19,39 +19,39 @@ type Product struct {
 type OrderStatus int
 
 const (
-	OrderStatusWaiting OrderStatus = iota
-	OrderStatusInPreparation
-	OrderStatusReady
-	OrderStatusCanceled
-	OrderStatusUnknown
+	OrderStatusKitchenWaiting OrderStatus = iota
+	OrderStatusKitchenPreparation
+	OrderStatusKitchenReady
+	OrderStatusKitchenCanceled
+	OrderStatusKitchenUnknown
 )
 
 func (os OrderStatus) ToString() string {
 	return [...]string{
-		"WAITING",
-		"PREPARATION",
-		"READY",
-		"CANCELED",
+		"KITCHEN_WAITING",
+		"KITCHEN_PREPARATION",
+		"KITCHEN_READY",
+		"KITCHEN_CANCELED",
 		"UNKNOWN",
 	}[os]
 }
 
 func ToOrderStatus(status string) OrderStatus {
 	switch status {
-	case "WAITING":
+	case "KITCHEN_WAITING":
 
-		return OrderStatusWaiting
-	case "PREPARATION":
+		return OrderStatusKitchenWaiting
+	case "KITCHEN_PREPARATION":
 
-		return OrderStatusInPreparation
-	case "READY":
+		return OrderStatusKitchenPreparation
+	case "KITCHEN_READY":
 
-		return OrderStatusReady
-	case "CANCELED":
+		return OrderStatusKitchenReady
+	case "KITCHEN_CANCELED":
 
-		return OrderStatusCanceled
+		return OrderStatusKitchenCanceled
 	default:
 
-		return OrderStatusUnknown
+		return OrderStatusKitchenUnknown
 	}
 }

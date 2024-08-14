@@ -150,12 +150,12 @@ func TestKitchenHandler_GetByIdFailBadRequest(t *testing.T) {
 func TestKitchenHandler_GetAll(t *testing.T) {
 	orders := []*entities.Order{usecases.OrderReady}
 	repository := new(usecases.KitchenRepositoryMock)
-	repository.On("GetAll", entities.OrderStatusReady).Return(orders, nil)
+	repository.On("GetAll", entities.OrderStatusKitchenReady).Return(orders, nil)
 
 	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
-	statusRequest := entities.OrderStatusReady.ToString()
+	statusRequest := entities.OrderStatusKitchenReady.ToString()
 	r := SetupTest()
 	r.GET("/kitchen/orders/", handler.GetAll)
 	request, _ := http.NewRequest("GET", fmt.Sprintf("/kitchen/orders/?status=%s", statusRequest), nil)
@@ -167,12 +167,12 @@ func TestKitchenHandler_GetAll(t *testing.T) {
 
 func TestKitchenHandler_GetAllFail(t *testing.T) {
 	repository := new(usecases.KitchenRepositoryMock)
-	repository.On("GetAll", entities.OrderStatusUnknown).Return(nil, errors.New("not found"))
+	repository.On("GetAll", entities.OrderStatusKitchenUnknown).Return(nil, errors.New("not found"))
 
 	useCase := usecases.NewKitchenService(repository, new(usecases.RestaurantClientMock))
 	handler := NewKitchenHandler(useCase)
 
-	statusRequest := entities.OrderStatusUnknown.ToString()
+	statusRequest := entities.OrderStatusKitchenUnknown.ToString()
 	r := SetupTest()
 	r.GET("/kitchen/orders/", handler.GetAll)
 	request, _ := http.NewRequest("GET", fmt.Sprintf("/kitchen/orders/?status=%s", statusRequest), nil)

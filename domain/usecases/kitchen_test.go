@@ -20,7 +20,7 @@ func TestKitchen(t *testing.T) {
 var _ = Describe("Kitchen", func() {
 	Context("creation success", func() {
 		orderWaiting := *OrderWithID
-		orderWaiting.Status = entities.OrderStatusWaiting
+		orderWaiting.Status = entities.OrderStatusKitchenWaiting
 		kitchenRepositoryMock := new(KitchenRepositoryMock)
 		kitchenRepositoryMock.On("Create", mock.Anything).Return(&orderWaiting, nil)
 
@@ -93,7 +93,7 @@ var _ = Describe("Kitchen", func() {
 
 	Context("preparation success", func() {
 		orderPreparation := *OrderWaiting
-		orderPreparation.Status = entities.OrderStatusInPreparation
+		orderPreparation.Status = entities.OrderStatusKitchenPreparation
 
 		kitchenRepositoryMock := new(KitchenRepositoryMock)
 		kitchenRepositoryMock.On("GetById", OrderWaiting.ID).Return(OrderWaiting, nil)
@@ -110,8 +110,8 @@ var _ = Describe("Kitchen", func() {
 			Expect(order).ShouldNot(BeNil())
 		})
 
-		It(fmt.Sprintf("has order with status %v", entities.OrderStatusInPreparation), func() {
-			Expect(order.Status).Should(Equal(entities.OrderStatusInPreparation))
+		It(fmt.Sprintf("has order with status %v", entities.OrderStatusKitchenPreparation), func() {
+			Expect(order.Status).Should(Equal(entities.OrderStatusKitchenPreparation))
 		})
 	})
 
