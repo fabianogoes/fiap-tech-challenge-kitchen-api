@@ -49,15 +49,16 @@ func main() {
 		panic(err)
 	}
 
-	awsSqsClient := messaging.NewAWSSQSClient(config)
+	sqsClient := messaging.NewAWSSQSClient(config)
 	rep := repository.NewKitchenRepository(db)
-	restaurantPublisher := messaging.NewRestaurantPublisher(config, awsSqsClient)
+	outboxRepository := repository.NewOutboxRepository(db)
+	restaurantPublisher := messaging.NewRestaurantPublisher(config, sqsClient, outboxRepository)
 	useCase := usecases.NewKitchenService(rep, restaurantPublisher)
 	handler := rest.NewKitchenHandler(useCase)
 
-	restaurantMessaging := messaging.NewRestaurantReceiver(useCase, config, awsSqsClient)
-
-	cron := scheduler.InitCronScheduler(restaurantMessaging)
+	restaurantMessaging := messaging.NewRestaurantReceiver(useCase, config, sqsClient)
+	outboxRetry := messaging.NewOutboxRetry(sqsClient, outboxRepository)
+	cron := scheduler.InitCronScheduler(restaurantMessaging, outboxRetry)
 	defer cron.Stop()
 
 	router, err := rest.NewRouter(handler)
