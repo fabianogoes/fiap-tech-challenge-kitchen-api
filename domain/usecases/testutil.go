@@ -131,11 +131,17 @@ func (or *KitchenRepositoryMock) UpdateStatus(order *entities.Order) (*entities.
 	return nil, args.Error(1)
 }
 
-type RestaurantClientMock struct {
+type RestaurantPublisherMock struct {
 	mock.Mock
 }
 
-func (p *RestaurantClientMock) ReadyForDelivery(orderID uint) error {
-	fmt.Printf("ReadyForDelivery orderID: %d \n", orderID)
+func (p *RestaurantPublisherMock) PublishCallback(orderID uint, status string) error {
+	args := p.Called(orderID)
+	fmt.Printf("Sending Callback request for order %d with status %s\n", orderID, status)
+
+	if args.Get(0) != nil {
+		return args.Error(0)
+	}
+
 	return nil
 }
