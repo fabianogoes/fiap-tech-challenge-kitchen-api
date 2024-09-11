@@ -39,7 +39,7 @@ func ToOrderEntity(dto *CreationRequest) *entities.Order {
 	}
 	return &entities.Order{
 		ID:     dto.ID,
-		Status: entities.OrderStatusWaiting,
+		Status: entities.OrderStatusKitchenWaiting,
 	}
 }
 

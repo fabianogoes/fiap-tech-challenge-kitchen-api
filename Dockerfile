@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 #Expose ports
-EXPOSE 8080
+EXPOSE 8020
 
 # Build the Go application
 RUN go build -o web app/web/main.go

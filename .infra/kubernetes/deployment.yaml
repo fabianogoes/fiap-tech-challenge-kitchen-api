@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: kitchen-api
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: kitchen-api
@@ -46,6 +46,10 @@ spec:
                   key: DB_URI
             - name: DB_NAME
               value: "tech_challenge_kitchen_db"
+            - name: AWS_ENDPOINT
+              value: https://sqs.us-east-1.amazonaws.com
+            - name: AWS_REGION
+              value: us-east-1
             - name: APP_NAME
               value: kitchen-api
             - name: APP_ENV
@@ -53,7 +57,9 @@ spec:
             - name: APP_PORT
               value: ":8080"
             - name: API_VERSION
-              value: "4.0.0"
-            - name: RESTAURANT_API_URL
-              value: "http://aefeb68552567485bab285db372d5b91-2128425875.us-east-1.elb.amazonaws.com:8080"
+              value: "5.0.0"
+            - name: PAYMENT_QUEUE_URL
+              value: "https://sqs.us-east-1.amazonaws.com/252506243013/order-kitchen-queue"
+            - name: PAYMENT_CALLBACK_QUEUE_URL
+              value: "https://sqs.us-east-1.amazonaws.com/252506243013/order-kitchen-callback-queue"
       restartPolicy: Always

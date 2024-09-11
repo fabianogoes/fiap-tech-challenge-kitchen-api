@@ -29,16 +29,16 @@ func (o *Order) ToOrderEntity() *entities.Order {
 
 func (o *Order) ToOrderStatus() entities.OrderStatus {
 	switch o.Status {
-	case "WAITING":
-		return entities.OrderStatusWaiting
-	case "PREPARATION":
-		return entities.OrderStatusInPreparation
-	case "READY":
-		return entities.OrderStatusReady
-	case "CANCELED":
-		return entities.OrderStatusCanceled
+	case "KITCHEN_WAITING":
+		return entities.OrderStatusKitchenWaiting
+	case "KITCHEN_PREPARATION":
+		return entities.OrderStatusKitchenPreparation
+	case "KITCHEN_READY":
+		return entities.OrderStatusKitchenReady
+	case "KITCHEN_CANCELED":
+		return entities.OrderStatusKitchenCanceled
 	default:
-		return entities.OrderStatusUnknown
+		return entities.OrderStatusKitchenUnknown
 	}
 }
 

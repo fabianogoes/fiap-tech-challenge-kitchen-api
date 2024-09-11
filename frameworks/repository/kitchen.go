@@ -49,7 +49,7 @@ func (or *KitchenRepository) GetById(id uint) (*entities.Order, error) {
 }
 
 func (or *KitchenRepository) GetAll(status entities.OrderStatus) ([]*entities.Order, error) {
-	if status == entities.OrderStatusUnknown {
+	if status == entities.OrderStatusKitchenUnknown {
 		return nil, fmt.Errorf("invalid status")
 	}
 

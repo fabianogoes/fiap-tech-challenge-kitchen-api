@@ -14,7 +14,7 @@ type KitchenRepositoryMock struct {
 var OrderIdSuccess uint = 1
 var OrderIdFail uint = 2
 var OrderWithoutID = &entities.Order{
-	Status: entities.OrderStatusWaiting,
+	Status: entities.OrderStatusKitchenWaiting,
 	Items: []*entities.OrderItem{
 		{
 			Product: &entities.Product{
@@ -28,7 +28,7 @@ var OrderWithoutID = &entities.Order{
 
 var OrderWithID = &entities.Order{
 	ID:     OrderIdSuccess,
-	Status: entities.OrderStatusWaiting,
+	Status: entities.OrderStatusKitchenWaiting,
 	Items: []*entities.OrderItem{
 		{
 			Product: &entities.Product{
@@ -44,7 +44,7 @@ var OrderWaiting = OrderWithID
 
 var OrderInPreparation = &entities.Order{
 	ID:     OrderIdSuccess,
-	Status: entities.OrderStatusInPreparation,
+	Status: entities.OrderStatusKitchenPreparation,
 	Items: []*entities.OrderItem{
 		{
 			Product: &entities.Product{
@@ -58,7 +58,7 @@ var OrderInPreparation = &entities.Order{
 
 var OrderReady = &entities.Order{
 	ID:     OrderIdSuccess,
-	Status: entities.OrderStatusReady,
+	Status: entities.OrderStatusKitchenReady,
 	Items: []*entities.OrderItem{
 		{
 			Product: &entities.Product{
@@ -72,7 +72,7 @@ var OrderReady = &entities.Order{
 
 var OrderCanceled = &entities.Order{
 	ID:     OrderIdSuccess,
-	Status: entities.OrderStatusCanceled,
+	Status: entities.OrderStatusKitchenCanceled,
 	Items: []*entities.OrderItem{
 		{
 			Product: &entities.Product{
@@ -106,7 +106,7 @@ func (or *KitchenRepositoryMock) GetById(id uint) (*entities.Order, error) {
 func (or *KitchenRepositoryMock) GetAll(status entities.OrderStatus) ([]*entities.Order, error) {
 	args := or.Called(status)
 
-	if status == entities.OrderStatusUnknown {
+	if status == entities.OrderStatusKitchenUnknown {
 		return nil, args.Error(1)
 	}
 
@@ -116,26 +116,32 @@ func (or *KitchenRepositoryMock) GetAll(status entities.OrderStatus) ([]*entitie
 func (or *KitchenRepositoryMock) UpdateStatus(order *entities.Order) (*entities.Order, error) {
 	args := or.Called(order)
 
-	if order.Status == entities.OrderStatusInPreparation {
+	if order.Status == entities.OrderStatusKitchenPreparation {
 		return OrderInPreparation, nil
 	}
 
-	if order.Status == entities.OrderStatusReady {
+	if order.Status == entities.OrderStatusKitchenReady {
 		return OrderReady, nil
 	}
 
-	if order.Status == entities.OrderStatusCanceled {
+	if order.Status == entities.OrderStatusKitchenCanceled {
 		return OrderCanceled, nil
 	}
 
 	return nil, args.Error(1)
 }
 
-type RestaurantClientMock struct {
+type RestaurantPublisherMock struct {
 	mock.Mock
 }
 
-func (p *RestaurantClientMock) ReadyForDelivery(orderID uint) error {
-	fmt.Printf("ReadyForDelivery orderID: %d \n", orderID)
+func (p *RestaurantPublisherMock) PublishCallback(orderID uint, status string) error {
+	args := p.Called(orderID)
+	fmt.Printf("Sending Callback request for order %d with status %s\n", orderID, status)
+
+	if args.Get(0) != nil {
+		return args.Error(0)
+	}
+
 	return nil
 }
